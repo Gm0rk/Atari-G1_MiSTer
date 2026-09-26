@@ -103,8 +103,7 @@ Read off the debug overlay. These are from build 113 with the build-114 MRAs:
 ### Where the core deliberately differs from MAME
 
 Each of these follows the board schematics in the Pit Fighter operator's
-manual, and was checked against the game code before changing
-(`docs/MAME_REVIEW.md` #21–#24):
+manual, and was checked against the game code before changing:
 
 * **The sound CPU sees the test switch.** The JSA II reads it through an
   inverting buffer (1 = test on). MAME reads it as 0 always, because it
@@ -207,14 +206,9 @@ Defaults are in **bold**.
 
 ## Building
 
-Use Quartus Prime 17.0.x, the MiSTer standard. Before the first compile:
-
-1. Run `python tools/setup_deps.py` once from the project root. It clones the
-   parts this repository does not carry (`sys/`, fx68k, T65, JT51, JT6295)
-   and wires them into `files.qip`. It needs only git.
-2. Create the PLL in Quartus's MegaWizard (`BUILD.md`, step 1).
-
-Then open `Arcade-AtariG1.qpf` and compile.
+Use Quartus Prime 17.0.x, the MiSTer standard. Everything the build needs is
+in this repository, including the MiSTer framework (`sys/`) and the
+third-party cores, so open `Arcade-AtariG1.qpf` and compile.
 
 The PLL provides three clocks from the 50 MHz reference:
 
@@ -228,40 +222,6 @@ The PLL is integer-N exact: M=126, N=5, VCO=1260, C0=22, C1=C2=11. 57.0 MHz is
 *not* close enough; it lands the frame rate 0.5% slow.
 
 The memory map spans 3,737,088 bytes, so any MiSTer SDRAM module is enough.
-
-Run the one-second checks before compiling. Each one exists because the fault
-it catches once cost a full compile cycle or worse:
-
-```
-bash   sim/syntax_check.sh           # parses every file with iverilog
-python tools/gen_files_qip.py --check  # every .sv is actually in the build
-python sim/port_audit.py             # connections vs port lists
-python sim/driver_audit.py           # signals driven from two blocks
-python sim/ram_audit.py              # arrays that will not infer as block RAM
-python sim/sv_portability_audit.py   # constructs that crash Quartus 17.0
-python sim/sdc_audit.py              # unbraced Tcl bracket patterns
-python sim/implicit_net_audit.py     # use-before-declare (29 known, harmless)
-python sim/mra_vector_check.py --zipdir <romdir>   # each MRA's reset vector
-python sim/mra_image.py --check mra <romdir>       # each MRA's byte layout,
-                                     # by MiSTer's own loader rules
-bash   sim/tcl_syntax_check.sh       # actually runs timing_report.tcl
-python tools/check_qip.py            # every path in the .qsf/.qip resolves
-                                     # (after setup_deps.py)
-```
-
-Three are worth singling out:
-
-- `sv_portability_audit.py` catches unpacked array ports. They are legal
-  SystemVerilog and accepted by every simulator, but fatal to `quartus_map`:
-  it fails with an Access Violation whose stack trace names nothing connected
-  to the design.
-- `syntax_check.sh` parses every file with a real front end, which regex-based
-  checks cannot replace. This project once shipped a concatenation whose
-  separators had landed inside the trailing comments, and balanced-brace
-  counting saw nothing wrong with it.
-- `mra_image.py --check` exists because the MRAs once loaded the playfield
-  ROMs byte-reversed. The layout had only ever been checked against the RTL's
-  own assumption.
 
 ### The debug overlay
 
@@ -292,6 +252,10 @@ green for toggling.
 
 ```
 Arcade-AtariG1.sv     core top level, OSD, inputs, video output, debug overlay
+Arcade-AtariG1.qpf    Quartus project (.qsf settings, .sdc timing constraints)
+files.qip             the core's source list
+microrom.mem          fx68k microcode, loaded from the project root
+nanorom.mem
 rtl/
   g1_pkg.sv           shared parameters, build number, SDRAM memory map
   cpu/                68000 support
@@ -334,11 +298,14 @@ rtl/
     g1_rom_loader.sv    ioctl download to SDRAM
   debug/
     g1_dbg_text.sv      labelled hex overlay
-sim/                  audits, reference models, testbenches
-tools/                dependency fetch, generators, timing report
+  pll.v, pll.qip, pll/  the core's PLL (Quartus IP)
+  fx68k/              68000 core (Jorge Cwik)
+  t65/                6502 core (T65)
+  jt51/, jt6295/      YM2151 and OKI6295 cores (Jose Tejada)
+sys/                  MiSTer framework, unmodified
 mra/                  13 MRA files
-docs/                 architecture notes, the MAME review, and notes on the
-                      Pit Fighter and Hydra manuals
+releases/             prebuilt core (.rbf) and MRAs
+docs/                 notes on the Pit Fighter and Hydra manuals
 ```
 
 `rtl/` is laid out by section of the A047896 board, so a file's location says
@@ -365,7 +332,7 @@ board's schematics, rather than against expectations:
   MAME's does. The sound CPU's own power-up diagnostics pass on it. The mixer
   is checked against MAME's formula and music/speech ratio.
 * **MAME itself.** Where behaviour over time mattered, Ubuntu's MAME 0.264 was
-  run headless with Lua probes (`tools/mame/`) for reference data: the coin
+  run headless with Lua probes for reference data: the coin
   protocol, which coin inputs credit, the sprite command timing, and dumps of
   video memory.
 * **The schematics.** The Pit Fighter operator's manual's schematics settled
@@ -396,11 +363,6 @@ not plumbing, and the bugs that actually blocked bring-up were structural:
 The corollary is now applied throughout: **a diagnostic must itself be shown
 capable of reporting the failure it is looking for** before its output is
 trusted.
-
-Every decision, its verification, and every conclusion later retracted (with
-the reason) is kept in [PROGRESS.md](PROGRESS.md) and [BUILD.md](BUILD.md).
-[`docs/MAME_REVIEW.md`](docs/MAME_REVIEW.md) lists every point checked
-against MAME and every place the core differs from it.
 
 ---
 
@@ -445,7 +407,7 @@ the YM2151 and OKI6295 implementations used on the JSA II board.
 `Template_MiSTer` by Alexey Melnikov (**Sorgelig**), whose `sys/` directory
 provides the HPS interface, video scaler and SDRAM pin handling this core builds
 on. `sys/` is unmodified. MiSTer's MRA loader (`mra_loader.cpp`) is the
-reference for `sim/mra_image.py`.
+reference for the MRA layout checks.
 
 The MiSTer community's existing arcade cores were a useful model for project
 structure and MRA conventions. The Atari GT core's debug overlay is the direct

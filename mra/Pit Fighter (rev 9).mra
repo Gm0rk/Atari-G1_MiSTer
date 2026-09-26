@@ -1,0 +1,81 @@
+<misterromdescription>
+    <name>Pit Fighter (rev 9)</name>
+    <setname>pitfight</setname>
+    <rbf>Arcade-AtariG1</rbf>
+    <year>1990</year>
+    <manufacturer>Atari Games</manufacturer>
+    <players>3</players>
+    <buttons>3</buttons>
+    <category>Fighter</category>
+	
+    <rom index="0" zip="pitfight.zip" md5="none">
+        <interleave output="16">
+            <part name="136081-9028.05d" crc="427713e9" map="01"/>
+            <part name="136081-9029.05b" crc="2cdeaeba" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="136081-9030.15d" crc="3bace9ef" map="01"/>
+            <part name="136081-9031.15b" crc="c717f011" map="10"/>
+        </interleave>
+        <part repeat="262144">00</part>
+        <interleave output="16">
+            <part name="136081-1002.65n" crc="f1d76a4c" map="01"/>
+            <part name="136081-1001.65r" crc="3af31444" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="136081-1004.70n" crc="977744da" map="01"/>
+            <part name="136081-1003.70r" crc="28c41c2a" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="136081-1006.75n" crc="b6ccd77e" map="01"/>
+            <part name="136081-1005.75r" crc="ae59aef2" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="136081-1008.90n" crc="09bd047c" map="01"/>
+            <part name="136081-1007.90r" crc="ba33b0c0" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="136081-1010.100n" crc="eca94bdc" map="01"/>
+            <part name="136081-1009.100r" crc="ab85b00b" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="136081-1012.115n" crc="efd1152d" map="01"/>
+            <part name="136081-1011.115r" crc="a86582fd" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="136081-1014.120n" crc="93bfcc15" map="01"/>
+            <part name="136081-1013.120r" crc="a141379e" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="136081-1016.130n" crc="19c3fbe0" map="01"/>
+            <part name="136081-1015.130r" crc="9378ad0b" map="10"/>
+        </interleave>
+        <interleave output="32">
+            <part name="136081-1021.90m" crc="777efee3" map="0021"/>
+            <part name="136081-1017.130m" crc="ad3cfea5" map="2100"/>
+        </interleave>
+        <interleave output="32">
+            <part name="136081-1022.75m" crc="524319d0" map="0021"/>
+            <part name="136081-1018.120m" crc="1a0f8bcf" map="2100"/>
+        </interleave>
+        <part repeat="131072">00</part>
+        <part repeat="131072">00</part>
+        <part name="136081-1025.45m" crc="fc41691a"/>
+        <part repeat="65536">00</part>
+        <part name="136081-1027.15l" crc="a59f381d"/>
+        <part repeat="65536">00</part>
+        <part name="136081-1061.7k" crc="5b0468c6"/>
+        <part name="136081-1062.7j" crc="f73fe3cb"/>
+        <part name="136081-1063.7e" crc="aa93421d"/>
+        <part name="136081-1064.7d" crc="33f045d5"/>
+        <part name="136081-1060.1b" crc="231d71d7"/>
+        <part name="136081-1040.30s" crc="9b0f8b95"/>
+        <part name="136081-1041.25s" crc="f7ba6153"/>
+        <part name="136081-1042.20s" crc="3572fe68"/>
+    </rom>
+    <rom index="1">
+        <part>01 72 03 28 27 02 06 05 20</part>
+    </rom>
+    <nvram index="2" size="2048"/>
+    <buttons names="Punch,Kick,Jump,Start,Coin" default="A,B,X,Start,R" count="3"/>
+</misterromdescription>

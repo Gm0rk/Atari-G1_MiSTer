@@ -1,0 +1,5 @@
+QUARTUS_VERSION = "21.1"
+
+# Revisions
+
+PROJECT_REVISION = "Arcade-AtariG1"

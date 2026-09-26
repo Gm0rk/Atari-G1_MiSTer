@@ -1,0 +1,103 @@
+# ===========================================================================
+#  files.qip -- Atari G1 for MiSTer
+#
+#  Sourced by Arcade-AtariG1.qsf, not added as a QIP_FILE, so every path is
+#  relative to the project root (do not use $::quartus(qip_path)).
+#
+#  rtl/ is organised by section of the A047896-01 board:
+#
+#      cpu/        Slapstic bank controller, address decode
+#      board/      top level, clock enables, work RAM, EEPROM, ADC0809,
+#                  Hydra controls, watchdog
+#      video/      raster timing, the two tilemaps, scroll, mixer, palette
+#      video/mob/  motion objects: the RLE renderer
+#      jsa2/       the JSA II sound board (a separate PCB)
+#      mem/        FPGA-side only: ROM loader, SDRAM controller and arbiter
+#      debug/      the on-screen diagnostic overlay
+#
+#  Third-party cores (fx68k, T65, jt51, jt6295) are under rtl/, each in its
+#  own folder.
+# ===========================================================================
+
+# --- Timing constraints -------------------------------------------------
+# Added here, as sys/sys.qip adds sys_top.sdc. Without this line the core
+# still compiles, but unconstrained.
+set_global_assignment -name SDC_FILE Arcade-AtariG1.sdc
+
+# --- Shared parameters -- must be analysed before anything that imports it 
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/g1_pkg.sv
+
+# --- CPU section: Slapstic bank controller and address decode ------------
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/cpu/g1_addr_decode.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/cpu/g1_slapstic.sv
+
+# --- Board glue: top level, clock enables, work RAM, EEPROM, ADC, watchdog 
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/board/g1_adc0809.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/board/g1_ce.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/board/g1_eeprom.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/board/g1_hydra_controls.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/board/g1_mainram.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/board/g1_top.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/board/g1_watchdog.sv
+
+# --- Video: raster timing, tilemaps, scroll, mixer, palette --------------
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/video/g1_alpha.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/video/g1_mixer.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/video/g1_palette.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/video/g1_playfield.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/video/g1_scroll.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/video/g1_video.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/video/g1_video_timing.sv
+
+# --- Motion objects: the RLE growth renderer -----------------------------
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/video/mob/g1_rle.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/video/mob/g1_rle_checksum.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/video/mob/g1_rle_decode.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/video/mob/g1_rle_fb.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/video/mob/g1_rle_objram.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/video/mob/g1_rle_prescan.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/video/mob/g1_rle_render.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/video/mob/g1_rle_scaler.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/video/mob/g1_rle_sort.sv
+
+# --- JSA II sound board --------------------------------------------------
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/jsa2/g1_jsa2.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/jsa2/g1_sound_comm.sv
+
+# --- Memory subsystem (FPGA-side; no counterpart on the real board) ------
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/mem/g1_rom_loader.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/mem/g1_sdram_arb.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/mem/g1_sdram_iface.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/mem/g1_sdram_selftest.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/mem/sdram.sv
+
+# --- Diagnostic overlay --------------------------------------------------
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/debug/g1_dbg_text.sv
+
+# --- Core top level ------------------------------------------------------
+set_global_assignment -name SYSTEMVERILOG_FILE Arcade-AtariG1.sv
+
+# --- Third-party cores --------------------------------------------------
+# fx68k -- 68000, Jorge Cwik
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/fx68k/fx68k.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/fx68k/fx68kAlu.sv
+set_global_assignment -name SYSTEMVERILOG_FILE rtl/fx68k/uaddrPla.sv
+
+# T65 -- 6502 for the JSA II board, Daniel Wallner. VHDL; T65_Pack.vhd is
+# the package the others use and must be analysed first, so the files are
+# listed here in order rather than through T65.qip.
+set_global_assignment -name VHDL_FILE rtl/t65/T65_Pack.vhd
+set_global_assignment -name VHDL_FILE rtl/t65/T65_ALU.vhd
+set_global_assignment -name VHDL_FILE rtl/t65/T65_MCode.vhd
+set_global_assignment -name VHDL_FILE rtl/t65/T65.vhd
+
+# jt51 -- YM2151, and jt6295 -- OKI6295, both Jose Tejada
+set_global_assignment -name QIP_FILE rtl/jt51/hdl/jt51.qip
+set_global_assignment -name QIP_FILE rtl/jt6295/hdl/jt6295.qip
+
+# --- PLL (Quartus IP) --------------------------------------------------
+set_global_assignment -name QIP_FILE rtl/pll.qip
+
+# Optional alternative SDRAM controller, not included. g1_sdram_iface.sv
+# instantiates it only when USE_ALT_SDRAM is defined (see the .qsf).
+#set_global_assignment -name VERILOG_FILE rtl/mem/sdram_alt.sv
