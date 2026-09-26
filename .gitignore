@@ -38,6 +38,12 @@ c5_pin_model_dump.txt
 *_netlist
 *.cdf
 **/.DS_Store
+
+# ---------------------------------------------------------------------------
+# Not needed to compile: development notes, checks and tools. They stay in the
+# local working copy and are left out of the repository. Paths start with '/'
+# so they match only at the project root (sys/build_id.tcl must stay).
+# ---------------------------------------------------------------------------
 /HANDOFF.md
 /PROGRESS.md
 /BUILD.md
@@ -47,12 +53,21 @@ c5_pin_model_dump.txt
 __pycache__/
 *.pyc
 timing_report.txt
+
+# docs/: only the two manual notes are published (the README links to them)
 /docs/*
 !/docs/HYDRA_MANUAL_NOTES.md
 !/docs/PITFIGHTER_MANUAL_NOTES.md
+
+# Unused: the build runs sys/build_id.tcl (the pre-flow script set in sys/sys.tcl)
 /build_id.tcl
+
+# Duplicates. fx68k reads its microcode from rtl/fx68k/, so root copies are stale.
 /releases/*.zip
-/rtl/fx68k/*.mem
+/microrom.mem
+/nanorom.mem
+
+# Third-party files the build does not use
 /rtl/t65/T65.qip
 /rtl/jt51/hdl/deprecated/
 /rtl/jt51/hdl/filter/
