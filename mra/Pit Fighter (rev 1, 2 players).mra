@@ -1,30 +1,39 @@
 <misterromdescription>
     <name>Pit Fighter (rev 1, 2 players)</name>
+    <mratimestamp>20260925</mratimestamp>
+    <mameversion>0264</mameversion>
     <setname>pitfight1p2</setname>
-    <rbf>Arcade-AtariG1</rbf>
     <year>1990</year>
     <manufacturer>Atari Games</manufacturer>
-    <players>3</players>
-    <buttons>3</buttons>
     <category>Fighter</category>
+    <rbf>AtariG1</rbf>
+    <rotation>horizontal</rotation>
+    <players>2</players>
+    <num_buttons>3</num_buttons>
+    <buttons names="Punch,Kick,Jump,Start,Coin" default="A,B,X,Start,R"/>
 
-    <!-- SDRAM layout, identical for every G1 set:
-         $000000 prog 512K | $080000 RLE 2M   | $280000 PF0-3 512K
-         $300000 PF4  128K | $320000 alpha 128K | $340000 OKI 256K
-         $380000 JSA   64K | $390000 PROMs 1.5K
-         Regions are FIXED so one decoder serves all sets; anything a
-         given set does not populate is zero-filled. -->
+    <romstruct>
+SDRAM layout, the same for every Atari G1 set (unused space is zero-filled):
+000000 - 07FFFF  512K  68000 program
+080000 - 27FFFF    2M  RLE motion objects
+280000 - 2FFFFF  512K  playfield planes 0-3
+300000 - 31FFFF  128K  playfield plane 4
+320000 - 33FFFF  128K  alpha characters
+340000 - 37FFFF  256K  OKI6295 samples
+380000 - 38FFFF   64K  JSA II 6502 program
+390000 - 3905FF  1.5K  motion object PROMs
+    </romstruct>
 
-    <rom index="0" zip="pitfight1p2.zip" md5="none">
+    <rom index="0" zip="pitfight1p2.zip|pitfight.zip" md5="92449598d404ca3e9f40a566abcdf81f">
 
         <!-- $000000  68000 program -->
         <interleave output="16">
-            <part name="136081-1628.05d" crc="63bb8d56" map="01"/>
-            <part name="136081-1629.05b" crc="d732b382" map="10"/>
+            <part name="pitfight1p2/136081-1628.05d" crc="63bb8d56" map="01"/>
+            <part name="pitfight1p2/136081-1629.05b" crc="d732b382" map="10"/>
         </interleave>
         <interleave output="16">
-            <part name="136081-1630.15d" crc="8c4a166d" map="01"/>
-            <part name="136081-1631.15b" crc="69857cc0" map="10"/>
+            <part name="pitfight1p2/136081-1630.15d" crc="8c4a166d" map="01"/>
+            <part name="pitfight1p2/136081-1631.15b" crc="69857cc0" map="10"/>
         </interleave>
         <part repeat="262144">00</part>
 
@@ -103,6 +112,4 @@
     </rom>
 
     <nvram index="2" size="2048"/>
-
-    <buttons names="Punch,Kick,Jump,Start,Coin" default="A,B,X,Start,R" count="3"/>
 </misterromdescription>
