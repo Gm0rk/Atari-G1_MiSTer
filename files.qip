@@ -78,10 +78,9 @@ set_global_assignment -name SYSTEMVERILOG_FILE rtl/debug/g1_dbg_text.sv
 set_global_assignment -name SYSTEMVERILOG_FILE Arcade-AtariG1.sv
 
 # --- Third-party cores --------------------------------------------------
-# fx68k -- 68000, Jorge Cwik
-set_global_assignment -name SYSTEMVERILOG_FILE rtl/fx68k/fx68k.sv
-set_global_assignment -name SYSTEMVERILOG_FILE rtl/fx68k/fx68kAlu.sv
-set_global_assignment -name SYSTEMVERILOG_FILE rtl/fx68k/uaddrPla.sv
+# fx68k -- 68000, Jorge Cwik. Its microcode (microrom.mem, nanorom.mem) is
+# read from rtl/fx68k/, beside fx68k.sv.
+set_global_assignment -name QIP_FILE rtl/fx68k/fx68k.qip
 
 # T65 -- 6502 for the JSA II board, Daniel Wallner. VHDL; T65_Pack.vhd is
 # the package the others use and must be analysed first, so the files are
