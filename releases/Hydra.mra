@@ -1,0 +1,93 @@
+<misterromdescription>
+    <name>Hydra</name>
+    <setname>hydra</setname>
+    <rbf>Arcade-Atari-G1_20260925</rbf>
+    <year>1990</year>
+    <manufacturer>Atari Games</manufacturer>
+    <players>1</players>
+    <buttons>5</buttons>
+    <category>Racing</category>
+    <rom index="0" zip="hydra.zip" md5="none">
+        <interleave output="16">
+            <part name="136079-3028.bin" crc="43475f73" map="01"/>
+            <part name="136079-3029.bin" crc="886e1de8" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="136079-3034.bin" crc="5115aa36" map="01"/>
+            <part name="136079-3035.bin" crc="a28ba44b" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="136079-1032.bin" crc="ecd1152a" map="01"/>
+            <part name="136079-1033.bin" crc="2ebe1939" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="136079-1030.bin" crc="b31fd41f" map="01"/>
+            <part name="136079-1031.bin" crc="453d076f" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="136079-1002.bin" crc="a1169469" map="01"/>
+            <part name="136079-1001.bin" crc="3f757a53" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="136079-1004.bin" crc="c0a2be66" map="01"/>
+            <part name="136079-1003.bin" crc="aa21ec33" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="136079-1006.bin" crc="ad831c59" map="01"/>
+            <part name="136079-1005.bin" crc="80c285b3" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="136079-1008.bin" crc="e6827f6b" map="01"/>
+            <part name="136079-1007.bin" crc="e0688cc0" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="136079-1010.bin" crc="9de4c689" map="01"/>
+            <part name="136079-1009.bin" crc="33624d07" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="136079-1012.bin" crc="43af45d0" map="01"/>
+            <part name="136079-1011.bin" crc="d55c6e49" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="136079-1014.bin" crc="8897d5e9" map="01"/>
+            <part name="136079-1013.bin" crc="2647a82b" map="10"/>
+        </interleave>
+        <interleave output="16">
+            <part name="136079-1016.bin" crc="61aaf14f" map="01"/>
+            <part name="136079-1015.bin" crc="cf7f69fd" map="10"/>
+        </interleave>
+        <part repeat="1048576">00</part>
+        <interleave output="32">
+            <part name="136079-1021.bin" crc="f88cdac2" map="0021"/>
+            <part name="136079-1017.bin" crc="bd77b747" map="2100"/>
+        </interleave>
+        <interleave output="32">
+            <part name="136079-1022.bin" crc="a9c612ff" map="0021"/>
+            <part name="136079-1018.bin" crc="7c24e637" map="2100"/>
+        </interleave>
+        <interleave output="32">
+            <part name="136079-1023.bin" crc="b706aa6e" map="0021"/>
+            <part name="136079-1019.bin" crc="aa2fb07b" map="2100"/>
+        </interleave>
+        <interleave output="32">
+            <part name="136079-1024.bin" crc="c49eac53" map="0021"/>
+            <part name="136079-1020.bin" crc="906ccd98" map="2100"/>
+        </interleave>
+        <part name="136079-1025.bin" crc="98b5b1a1"/>
+        <part name="136079-1026.bin" crc="d68d44aa"/>
+        <part name="136079-1027.bin" crc="f9135b9b"/>
+        <part name="136079-1037.bin" crc="b974d3d0"/>
+        <part name="136079-1038.bin" crc="a2eda15b"/>
+        <part name="136079-1039.bin" crc="eb9eaeb7"/>
+        <part repeat="65536">00</part>
+        <part name="hydraa0.bin" crc="619d7319"/>
+        <part name="136079-1040.bin" crc="43d6f3d4"/>
+        <part name="136079-1041.bin" crc="341dc4bb"/>
+        <part name="136079-1042.bin" crc="2e49b52e"/>
+    </rom>
+    <rom index="1">
+        <part>00 74 07 00 FF 00 01 03 00</part>
+    </rom>
+    <nvram index="2" size="2048"/>
+    <buttons names="Left Trigger,Right Trigger,Left Thumb,Right Thumb,Boost,Pedal,Coin" default="A,B,X,Y,L,R,Select" count="6"/>
+</misterromdescription>
