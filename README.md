@@ -79,7 +79,7 @@ Board photographs, chip listings and the wider family context are catalogued at
 | Controls and coins | **Working on hardware** for Pit Fighter. Player 3's coin credit is mapped to the right coin mech, because the cabinets have only two coin mechs. **Hydra**: a Pedal button (it ramps like MAME's keyboard pedal), pedal from the right stick pushed up, and d-pad steering while the left stick is centred. Pushing the analog stick left or up used to steer hard right or down at the default sensitivity; that is fixed, and the default is now the stick's full range. Checked in simulation, not yet on hardware |
 | EEPROM | Implemented and saved as NVRAM. Persistence across reloads. |
 | Service menu | Reached with **OSD → Service Menu → On**, then reset. The sound CPU sees the switch too, as on the real board, so the Sound Test shows its own RAM/ROM check and live coin switches. The screens have not yet been walked through; see the checklists in [`docs/PITFIGHTER_MANUAL_NOTES.md`](docs/PITFIGHTER_MANUAL_NOTES.md) and [`docs/HYDRA_MANUAL_NOTES.md`](docs/HYDRA_MANUAL_NOTES.md) |
-| MRAs | **Working.** 13 sets (10 Pit Fighter, 3 Hydra), each byte-exact at 3,737,088 bytes, with a validated 68000 reset vector. The interleave layout is checked by MiSTer's own loader rules. Merged (torrentzipped) ROM sets are supported |
+| MRAs | **Working.** 13 sets (10 Pit Fighter, 3 Hydra) in MiSTer's MRA format, named as in MAME 0.264. Each is byte-exact at 3,737,088 bytes, with a validated 68000 reset vector and an md5 that MiSTer checks on load. The interleave layout and the ROM lookup are checked by MiSTer's own loader rules. Merged (torrentzipped), split and non-merged ROM sets all load |
 
 ### Measured on hardware
 
@@ -118,8 +118,8 @@ manual, and was checked against the game code before changing:
 ## Using the core
 
 ROMs are not distributed with this core. Put the `.mra` files from `mra/` in
-`_Arcade`, and the MAME ROM sets (`pitfight.zip`, `hydra.zip`; merged sets
-work) where your MRAs look for them.
+`_Arcade`, the core (`Arcade-AtariG1_<date>.rbf` from `releases/`) in
+`_Arcade/cores`, and the MAME ROM sets where your MRAs look for them. Merged sets of`pitfight.zip` and `hydra.zip`go into `/games/mame/`.
 
 ### Controls
 
@@ -251,11 +251,14 @@ green for toggling.
 ## Repository layout
 
 ```
-Arcade-AtariG1.sv     core top level, OSD, inputs, video output, debug overlay
-Arcade-AtariG1.qpf    Quartus project (.qsf settings, .sdc timing constraints)
+Arcade-AtariG1.qpf    Quartus project
+Arcade-AtariG1.qsf    Quartus settings
+Arcade-AtariG1.sdc    timing constraints for this core
+Arcade-AtariG1.sv     core top level: OSD, inputs, video output, debug overlay
 files.qip             the core's source list
-microrom.mem          fx68k microcode, loaded from the project root
-nanorom.mem
+clean.bat             deletes Quartus build output
+LICENSE, README.md
+.gitignore, .gitattributes
 rtl/
   g1_pkg.sv           shared parameters, build number, SDRAM memory map
   cpu/                68000 support
@@ -298,19 +301,46 @@ rtl/
     g1_rom_loader.sv    ioctl download to SDRAM
   debug/
     g1_dbg_text.sv      labelled hex overlay
-  pll.v, pll.qip, pll/  the core's PLL (Quartus IP)
+  pll.qip, pll.v      the core's PLL (Quartus IP)
+  pll/                the PLL's generated files
   fx68k/              68000 core (Jorge Cwik)
-  t65/                6502 core (T65)
-  jt51/, jt6295/      YM2151 and OKI6295 cores (Jose Tejada)
+    fx68k.qip           its source list
+    fx68k.sv, fx68kAlu.sv, uaddrPla.sv
+    microrom.mem        68000 microcode
+    nanorom.mem         68000 nanocode
+  t65/                6502 core (T65): T65*.vhd, README
+  jt51/               YM2151 core (Jose Tejada): hdl/ (jt51.qip), README.md, LICENSE
+  jt6295/             OKI6295 core (Jose Tejada): hdl/ (jt6295.qip), README.md, LICENSE
 sys/                  MiSTer framework, unmodified
-mra/                  13 MRA files
-releases/             prebuilt core (.rbf) and MRAs
-docs/                 notes on the Pit Fighter and Hydra manuals
+mra/                  one MRA per ROM set
+  Pit Fighter (rev 9).mra
+  Pit Fighter (rev 7).mra
+  Pit Fighter (rev 6).mra
+  Pit Fighter (rev 5).mra
+  Pit Fighter (rev 4).mra
+  Pit Fighter (rev 3).mra
+  Pit Fighter (rev 2).mra
+  Pit Fighter (rev 1, 2 players).mra
+  Pit Fighter (Japan rev 3, 2 players).mra
+  Pit Fighter (bootleg).mra
+  Hydra.mra
+  Hydra (prototype 5-14-90).mra
+  Hydra (prototype 5-25-90).mra
+releases/             the prebuilt core and the two main MRAs
+  Arcade-AtariG1_YYYYMMDD.rbf
+  Pit Fighter (rev 9).mra
+  Hydra.mra
+docs/
+  PITFIGHTER_MANUAL_NOTES.md  what the Pit Fighter manual means for the core
+  HYDRA_MANUAL_NOTES.md       Hydra's controls, calibration and self-test
 ```
 
 `rtl/` is laid out by section of the A047896 board, so a file's location says
 which part of the hardware it models. `mem/` and `debug/` are the exceptions,
 and are marked as such: the real board used mask ROMs and had no overlay.
+
+Development notes, testbenches and tools are kept out of the repository
+(see `.gitignore`).
 
 ## How it is verified
 
@@ -350,19 +380,7 @@ board's schematics, rather than against expectations:
 * **Hardware.** The debug overlay. Every open fault gets a counter before it
   gets a theory.
 
-That last point was learned the hard way. Reference models verify function,
-not plumbing, and the bugs that actually blocked bring-up were structural:
 
-- a reset term dropped during a tidy-up, which held the loader inert for a
-  whole download while the transfer reported success;
-- one-clock pulses generated in the exact cycle their consumer left reset;
-- a duplicate SDRAM access after every request;
-- a sound CPU fed each program byte one cycle late;
-- MRAs whose layout had only been checked against the RTL's own assumption.
-
-The corollary is now applied throughout: **a diagnostic must itself be shown
-capable of reporting the failure it is looking for** before its output is
-trusted.
 
 ---
 
